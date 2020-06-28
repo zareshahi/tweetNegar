@@ -25,7 +25,8 @@ draw = ImageDraw.Draw(instagram_story)
 
 img_pil = Image.fromarray(img)
 draw = ImageDraw.Draw(img_pil)
-draw.text((img.shape[1]//2, img.shape[0]//2), bidi_text, font=vazir_font, fill=(b, g, r, a))
+draw.text((img.shape[1]//2, img.shape[0]//2),
+          bidi_text, font=vazir_font, fill=(b, g, r, a))
 img = np.array(img_pil)
 
 img_pil.show()
