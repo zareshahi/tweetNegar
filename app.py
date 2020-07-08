@@ -1,3 +1,5 @@
+from io import BytesIO
+
 import arabic_reshaper
 import numpy as np
 from bidi.algorithm import get_display
@@ -31,3 +33,11 @@ draw.text(((img.shape[1]-w)/2,(img.shape[0]-h)/2),
 img = np.array(img_pil)
 
 img_pil.show()
+
+def get_image(id):
+    # save image to memory for send to telegram bot
+    bio = BytesIO()
+    bio.name = f'image{id}.jpeg'
+    img_pil.save(bio, 'JPEG')
+    bio.seek(0)
+    return bio
