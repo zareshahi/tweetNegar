@@ -41,3 +41,6 @@ def get_image(id):
     img_pil.save(bio, 'JPEG')
     bio.seek(0)
     return bio
+
+def set_text(text):
+    text = text
