@@ -1,6 +1,8 @@
-from telegram.ext import Updater, InlineQueryHandler, CommandHandler
-import requests
 import re
+
+import requests
+from telegram.ext import CommandHandler, InlineQueryHandler, Updater
+
 
 def get_url():
     contents = requests.get('https://random.dog/woof.json').json()    
