@@ -14,7 +14,7 @@ def bop(bot, update):
     chat_id = update.message.chat_id
     bot.send_photo(chat_id=chat_id, photo=url)
 
-def hello(update, context):
+def hello(bot, update):
     update.message.reply_text(
         'سلام علیکم {}'.format(update.message.from_user.first_name))
 
