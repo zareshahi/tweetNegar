@@ -3,3 +3,4 @@ arabic-reshaper==2.1.0
 numpy==1.17.3
 Pillow==7.1.2
 python-telegram-bot==12.8
+autopep8==1.5.3
