@@ -1,5 +1,4 @@
 import re
-
 import requests
 from telegram.ext import CommandHandler, InlineQueryHandler, Updater
 
