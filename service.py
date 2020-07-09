@@ -36,7 +36,7 @@ def main():
     with open('./config.json') as json_file:
         config_json = json.load(json_file)
     # set telegram token updater
-    telegram_token = config_json['telegram-token']
+    telegram_token = config_json['telegram']['token']
     updater = Updater(telegram_token)
     # set dispacher for bot
     dp = updater.dispatcher
