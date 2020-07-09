@@ -26,8 +26,9 @@ def hello(bot, update):
 
 def post_image(bot, update):
     chat_id = update.message.chat_id
+    update.message.reply_text("لطفا کمی صبر کنید")
     image = get_image(chat_id)
-    bot.send_photo(chat_id=chat_id, photo=image)
+    bot.sendDocument(chat_id=chat_id, document=image)
 
 
 def main():
