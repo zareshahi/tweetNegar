@@ -1,3 +1,4 @@
+import json
 import re
 
 import requests
@@ -30,8 +31,16 @@ def post_image(bot, update):
 
 
 def main():
-    updater = Updater('1130555713:AAEfpdkRQIT7AbvjyUQfWQMZN2pzRRVwf0w')
+    # use secret json file to hide security API keys
+    # secret.json is git ignored - you can see this file template in secret.template.json
+    with open('./config.json') as json_file:
+        config_json = json.load(json_file)
+    # set telegram token updater
+    telegram_token = config_json['telegram-token']
+    updater = Updater(telegram_token)
+    # set dispacher for bot
     dp = updater.dispatcher
+    # bot handlers (such: /image command)
     dp.add_handler(CommandHandler('bop', bop))
     dp.add_handler(CommandHandler('hello', hello))
     dp.add_handler(CommandHandler('image', post_image))
