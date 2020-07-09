@@ -4,13 +4,6 @@ from bidi.algorithm import get_display
 from numpy import array, uint8, zeros
 from PIL import Image, ImageDraw, ImageFont
 
-<<<<<<< Updated upstream
-# Make canvas and set the color
-# TODO: use flexible size by user input
-img = numpy.zeros((1920, 1080, 3), numpy.uint8)
-b, g, r, a = 0, 255, 0, 0
-=======
->>>>>>> Stashed changes
 
 def build_image(text="بسم الله الرحمان الرحیم",font_size=24,font_path='./assets/font/vazir/Vazir-Light.ttf',image_path='./assets/images/output/insta_storty.jpeg'):
 
@@ -33,20 +26,11 @@ def build_image(text="بسم الله الرحمان الرحیم",font_size=24,
     draw = ImageDraw.Draw(end_image)
     w, h = draw.textsize(text.encode('utf8'))
 
-<<<<<<< Updated upstream
-img_pil = Image.fromarray(img)
-draw = ImageDraw.Draw(img_pil)
-w, h = draw.textsize(text.encode('utf8'))
-draw.text(((img.shape[1]-w)/2, (img.shape[0]-h)/2),
-          bidi_text, font=vazir_font, fill=(b, g, r, a))
-img = numpy.array(img_pil)
-=======
     # Add text on image
     draw.text(((img.shape[1]-w)/2, (img.shape[0]-h)/2),
             bidi_text, font=vazir_font, fill=(b, g, r, a))
 
     return end_image
->>>>>>> Stashed changes
 
 
 def get_image(id):
