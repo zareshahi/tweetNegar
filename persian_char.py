@@ -2,14 +2,10 @@
 
 # install: pip install --upgrade arabic-reshaper
 import arabic_reshaper
-
 # install: pip install python-bidi
 from bidi.algorithm import get_display
-
 # install: pip install Pillow
-from PIL import ImageFont
-from PIL import Image
-from PIL import ImageDraw
+from PIL import Image, ImageDraw, ImageFont
 
 # use a good font!
 fontFile = "/Users/amirreza/pil/Sahel.ttf"
@@ -28,7 +24,7 @@ bidi_text = get_display(reshaped_text)           # correct its direction
 
 # start drawing on image
 draw = ImageDraw.Draw(image)
-draw.text((0, 0), bidi_text, (255,255,255), font=font)
+draw.text((0, 0), bidi_text, (255, 255, 255), font=font)
 draw = ImageDraw.Draw(image)
 
 # save it

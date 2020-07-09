@@ -28,11 +28,12 @@ draw = ImageDraw.Draw(instagram_story)
 img_pil = Image.fromarray(img)
 draw = ImageDraw.Draw(img_pil)
 w, h = draw.textsize(text.encode('utf8'))
-draw.text(((img.shape[1]-w)/2,(img.shape[0]-h)/2),
+draw.text(((img.shape[1]-w)/2, (img.shape[0]-h)/2),
           bidi_text, font=vazir_font, fill=(b, g, r, a))
 img = np.array(img_pil)
 
 img_pil.show()
+
 
 def get_image(id):
     # save image to memory for send to telegram bot
@@ -41,6 +42,7 @@ def get_image(id):
     img_pil.save(bio, 'JPEG')
     bio.seek(0)
     return bio
+
 
 def set_text(text):
     text = text
