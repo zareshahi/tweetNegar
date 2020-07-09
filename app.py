@@ -4,7 +4,6 @@ from bidi.algorithm import get_display
 from numpy import array, uint8, zeros
 from PIL import Image, ImageDraw, ImageFont
 
-
 def build_image(text="بسم الله الرحمان الرحیم",font_size=24,font_path='./assets/font/vazir/Vazir-Light.ttf',image_path='./assets/images/output/insta_storty.jpeg'):
 
     # Make canvas and set the color
@@ -31,7 +30,6 @@ def build_image(text="بسم الله الرحمان الرحیم",font_size=24,
             bidi_text, font=vazir_font, fill=(b, g, r, a))
 
     return end_image
-
 
 def get_image(id):
     # save image to memory for send to telegram bot
