@@ -1,15 +1,52 @@
 import json
 
 from telegram.ext import CommandHandler, InlineQueryHandler, Updater
-
+from telegram import ReplyKeyboardMarkup,ChatAction
 from app import get_image
+from functools import wraps
 
 
+def is_typing_action(func):
+    """is typing action while processing func command."""
+    @wraps(func)
+    def command_func(*args, **kwargs):
+        bot, update = args
+        bot.send_chat_action(chat_id=update.message.chat_id, action=ChatAction.TYPING)
+        func(bot, update, **kwargs)
+
+    return command_func
+
+
+def is_sending_action(func):
+    """is sending action while processing func command."""
+    @wraps(func)
+    def command_func(*args, **kwargs):
+        bot, update = args
+        bot.send_chat_action(chat_id=update.message.chat_id, action=ChatAction.UPLOAD_DOCUMENT)
+        func(bot, update, **kwargs)
+
+    return command_func
+
+
+@is_sending_action
 def post_image(bot, update):
     chat_id = update.message.chat_id
-    update.message.reply_text("لطفا کمی صبر کنید")
     image = get_image(chat_id)
     bot.sendDocument(chat_id=chat_id, document=image)
+
+
+@is_typing_action
+def menu(bot, update):
+    """
+    Main menu function.
+    This will display the options from the main menu.
+    """
+    # Create buttons to select language:
+    custom_keyboard = [['تنظیمات', 'ایجاد طرح جدید'],['درباره ما']]
+
+    reply_markup = ReplyKeyboardMarkup(custom_keyboard)
+    chat_id = update.message.chat_id
+    bot.send_message(chat_id=chat_id,text="لطفا گزینه مورد نظر را انتخاب کنید",reply_markup=reply_markup)
 
 
 def main():
@@ -24,6 +61,7 @@ def main():
     dp = updater.dispatcher
     # bot handlers (such: /image command)
     dp.add_handler(CommandHandler('image', post_image))
+    dp.add_handler(CommandHandler('start', menu))
     updater.start_polling()
     updater.idle()
 
