@@ -44,7 +44,7 @@ def menu(bot, update):
     Main menu function.
     This will display the options from the main menu.
     """
-    # Create buttons to select language:
+    # Create buttons to select action:
     custom_keyboard = [['تنظیمات', 'ایجاد طرح جدید'], ['درباره ما']]
 
     reply_markup = ReplyKeyboardMarkup(custom_keyboard, resize_keyboard=True)
