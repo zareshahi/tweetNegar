@@ -29,37 +29,35 @@ MENU, SET_STAT, GET_LINK = range(3)
 STATE = MENU
 
 
-def is_typing_action(func):
-    """is typing action while processing func command."""
-    @wraps(func)
-    def command_func(*args, **kwargs):
-        bot, update = args
-        bot.send_chat_action(chat_id=update.message.chat_id,
-                             action=ChatAction.TYPING)
-        func(bot, update, **kwargs)
+def action_status(action_type):
 
-    return command_func
+    def is_typing_or_sending_action(func):
+        """is typing or sending action while processing func command."""
+        @wraps(func)
+        def command_func(*args, **kwargs):
 
+            bot, update = args
+            if action_type == "typing":
+                bot.send_chat_action(chat_id=update.message.chat_id,
+                                     action=ChatAction.TYPING)
+            elif action_type == "sending":
+                bot.send_chat_action(chat_id=update.message.chat_id,
+                                     action=ChatAction.UPLOAD_DOCUMENT)
+            func(bot, update, **kwargs)
 
-def is_sending_action(func):
-    """is sending action while processing func command."""
-    @wraps(func)
-    def command_func(*args, **kwargs):
-        bot, update = args
-        bot.send_chat_action(chat_id=update.message.chat_id,
-                             action=ChatAction.UPLOAD_DOCUMENT)
-        func(bot, update, **kwargs)
+        return command_func
 
-    return command_func
+    return is_typing_or_sending_action
 
 
-def post_image(bot, update):
+@action_status("sending")
+def image_builder(bot, update):
     chat_id = update.message.chat_id
-    update.message.reply_text("لطفا کمی صبر کنید")
     image = get_image(chat_id)
     bot.sendDocument(chat_id=chat_id, document=image)
 
 
+@action_status("typing")
 def start(bot, update):
     """
     Start function. Displayed whenever the /start command is called.
@@ -79,6 +77,7 @@ def start(bot, update):
     return MENU
 
 
+@action_status("typing")
 def menu(bot, update):
     global STATE
     global Select
@@ -104,6 +103,7 @@ def menu(bot, update):
         return MENU
 
 
+@action_status("typing")
 def get_link(bot, update):
     user = update.message.from_user
     logger.info("user {} send tweet link.".format(user.first_name))
@@ -111,6 +111,7 @@ def get_link(bot, update):
     return
 
 
+@action_status("typing")
 def about_bot(bot, update):
     """
     About function. Displays info about DisAtBot.
@@ -125,6 +126,7 @@ def about_bot(bot, update):
     return
 
 
+@action_status("typing")
 def help(bot, update):
     """
     Help function.
@@ -136,6 +138,7 @@ def help(bot, update):
                               reply_markup=ReplyKeyboardRemove())
 
 
+@action_status("typing")
 def cancel(bot, update):
     """
     User cancelation function.
@@ -149,6 +152,7 @@ def cancel(bot, update):
     return ConversationHandler.END
 
 
+@action_status("typing")
 def error(bot, update, error):
     """Log Errors caused by Updates."""
     logger.warning('Update "%s" caused error "%s"', update, error)
@@ -162,7 +166,8 @@ def main():
     handler for the interaction with the user.
     """
     # use config json file to hide security API keys
-    # config.json is git ignored - you can see this file template in config.template.json
+    # config.json is git ignored - you can see this file template in
+    # config.template.json
     with open('./config.json') as json_file:
         config_json = json.load(json_file)
     # set telegram token updater
