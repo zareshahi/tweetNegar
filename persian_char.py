@@ -14,17 +14,31 @@ fontFile = "Sahel.ttf"
 imageFile = "input.jpg"
 
 # load the font and image
-font = ImageFont.truetype(fontFile, 18)
+font = ImageFont.truetype(fontFile, 50)
 image = Image.open(imageFile)
 
 # firts you must prepare your text (you dont need this for english text)
-text = "سلام ایران"
+username = "آقای"
+reshaped_text = arabic_reshaper.reshape(username)    # correct its shape
+bidi_name = get_display(reshaped_text)
+
+text = "تست"
 reshaped_text = arabic_reshaper.reshape(text)    # correct its shape
 bidi_text = get_display(reshaped_text)           # correct its direction
 
+# get image size
+(w, h) = image.size
+
+# text location
+cx = w//2
+cy = h//2
+
 # start drawing on image
 draw = ImageDraw.Draw(image)
-draw.text((0, 0), bidi_text, (255, 255, 255), font=font)
+draw.text((cx, cy), bidi_name, (25, 25, 100), font=font, spacing=100, align='right')
+
+draw.multiline_text((cx, cy+100), bidi_text, fill='red', font=font, spacing=100, align='right')
+
 draw = ImageDraw.Draw(image)
 
 # save it
