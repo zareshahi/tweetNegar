@@ -22,7 +22,10 @@ username = "نام توئیت کننده"
 reshaped_text = arabic_reshaper.reshape(username)    # correct its shape
 bidi_name = get_display(reshaped_text)
 
-text = "مثلا متن توئیت"
+text = """متن متن متن متن متن 
+متن متن متن متن متن
+متن متن متن متن متن"""
+
 reshaped_text = arabic_reshaper.reshape(text)    # correct its shape
 bidi_text = get_display(reshaped_text)           # correct its direction
 
@@ -35,9 +38,9 @@ cy = h//2
 
 # start drawing on image
 draw = ImageDraw.Draw(image)
-draw.text((cx, cy), bidi_name, (25, 25, 100), font=font, spacing=0, align='right')
+draw.text((cx, cy-100), bidi_name, (25, 25, 100), font=font, spacing=0, align='right')
 
-draw.multiline_text((cx, cy+100), bidi_text, fill='red', font=font, spacing=0, align='right')
+draw.multiline_text((cx-200, cy), bidi_text, fill='purple', font=font, spacing=10, align='center')
 
 draw = ImageDraw.Draw(image)
 
