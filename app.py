@@ -4,7 +4,7 @@ from bidi.algorithm import get_display
 from numpy import array, uint8, zeros
 from PIL import Image, ImageDraw, ImageFont
 
-def build_image(text="بسم الله الرحمان الرحیم",font_size=24,font_path='./assets/font/vazir/Vazir-Light.ttf',image_path='./assets/images/output/insta_storty.jpeg'):
+def build_image(text="بسم الله الرحمن الرحیم",font_size=24,font_path='./assets/font/vazir/Vazir-Light.ttf',image_path='./assets/images/output/insta_storty.jpeg'):
 
     # Make canvas and set the color
     # TODO: use flexible size by user input
