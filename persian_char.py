@@ -8,10 +8,10 @@ from bidi.algorithm import get_display
 from PIL import Image, ImageDraw, ImageFont
 
 # use a good font!
-fontFile = "/Users/amirreza/pil/Sahel.ttf"
+fontFile = "Sahel.ttf"
 
 # this was a 400x400 jpg file
-imageFile = "/Users/amirreza/pil/input.jpg"
+imageFile = "input.jpg"
 
 # load the font and image
 font = ImageFont.truetype(fontFile, 18)
