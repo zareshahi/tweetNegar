@@ -18,11 +18,11 @@ font = ImageFont.truetype(fontFile, 50)
 image = Image.open(imageFile)
 
 # firts you must prepare your text (you dont need this for english text)
-username = "آقای"
+username = "نام توئیت کننده"
 reshaped_text = arabic_reshaper.reshape(username)    # correct its shape
 bidi_name = get_display(reshaped_text)
 
-text = "تست"
+text = "مثلا متن توئیت"
 reshaped_text = arabic_reshaper.reshape(text)    # correct its shape
 bidi_text = get_display(reshaped_text)           # correct its direction
 
@@ -35,9 +35,9 @@ cy = h//2
 
 # start drawing on image
 draw = ImageDraw.Draw(image)
-draw.text((cx, cy), bidi_name, (25, 25, 100), font=font, spacing=100, align='right')
+draw.text((cx, cy), bidi_name, (25, 25, 100), font=font, spacing=0, align='right')
 
-draw.multiline_text((cx, cy+100), bidi_text, fill='red', font=font, spacing=100, align='right')
+draw.multiline_text((cx, cy+100), bidi_text, fill='red', font=font, spacing=0, align='right')
 
 draw = ImageDraw.Draw(image)
 
