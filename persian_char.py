@@ -14,7 +14,7 @@ fontFile = "./assets/font/sahel/sahel.ttf"
 imageFile = "./assets/images/input/tweetNegar.jpg"
 
 # load the profile photo
-profile = Image.open("./assets/user/profile.png") 
+profile = Image.open("./assets/user/profile.jpg") 
 
 # load the font and image
 font = ImageFont.truetype(fontFile, 50)
