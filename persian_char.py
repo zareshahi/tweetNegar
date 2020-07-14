@@ -8,10 +8,10 @@ from bidi.algorithm import get_display
 from PIL import Image, ImageDraw, ImageFont
 
 # use a good font!
-fontFile = "Sahel.ttf"
+fontFile = "./assets/font/sahel/sahel.ttf"
 
 # this was a 400x400 jpg file
-imageFile = "input.jpg"
+imageFile = "./assets/images/input/tweetNegar.jpg"
 
 # load the font and image
 font = ImageFont.truetype(fontFile, 50)
@@ -38,11 +38,11 @@ cy = h//2
 
 # start drawing on image
 draw = ImageDraw.Draw(image)
-draw.text((cx, cy-100), bidi_name, (25, 25, 100), font=font, spacing=0, align='right')
+draw.text((400, 650), bidi_name, (25, 25, 100), font=font, spacing=0, align='right')
 
-draw.multiline_text((cx-200, cy), bidi_text, fill='purple', font=font, spacing=10, align='center')
+draw.multiline_text((300, 850), bidi_text, fill='purple', font=font, spacing=10, align='center')
 
 draw = ImageDraw.Draw(image)
 
 # save it
-image.save("output.png")
+image.save("./assets/images/output/tweetNegar.png")
