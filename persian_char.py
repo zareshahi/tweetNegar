@@ -10,8 +10,11 @@ from PIL import Image, ImageDraw, ImageFont
 # use a good font!
 fontFile = "./assets/font/sahel/sahel.ttf"
 
-# this was a 400x400 jpg file
+# a 1080x1920 jpg file
 imageFile = "./assets/images/input/tweetNegar.jpg"
+
+# load the profile photo
+profile = Image.open("./assets/user/profile.png") 
 
 # load the font and image
 font = ImageFont.truetype(fontFile, 50)
@@ -43,6 +46,13 @@ draw.text((400, 650), bidi_name, (25, 25, 100), font=font, spacing=0, align='rig
 draw.multiline_text((300, 850), bidi_text, fill='black', font=font, spacing=10, align='right')
 
 draw = ImageDraw.Draw(image)
+
+# draw profile photo on output
+mask = Image.new("L", profile.size, 0)
+draw = ImageDraw.Draw(mask)
+draw.ellipse((0, 0, 180, 180), fill=255)
+mask.save("./assets/user/mask.jpg")
+image.paste(profile, (755, 595), mask)
 
 # save it
 image.save("./assets/images/output/tweetNegar.png")
