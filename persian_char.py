@@ -40,7 +40,7 @@ cy = h//2
 draw = ImageDraw.Draw(image)
 draw.text((400, 650), bidi_name, (25, 25, 100), font=font, spacing=0, align='right')
 
-draw.multiline_text((300, 850), bidi_text, fill='purple', font=font, spacing=10, align='center')
+draw.multiline_text((300, 850), bidi_text, fill='black', font=font, spacing=10, align='center')
 
 draw = ImageDraw.Draw(image)
 
