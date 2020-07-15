@@ -1,2 +1,2 @@
 # tweetNegar
-create beautiful scene from tweets
+This bot helps you to create beautiful scenes from tweets.
