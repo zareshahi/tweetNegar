@@ -1,5 +1,5 @@
 # ===============================================================
-# Author: Ali Zareshahi & Mohammad Pooshesh & SomeOneElse
+# Author: Ali Zareshahi & Mohammad Pooshesh
 # Email:
 # Twitter:
 # Telegram:
