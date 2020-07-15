@@ -7,6 +7,9 @@ from bidi.algorithm import get_display
 # install: pip install Pillow
 from PIL import Image, ImageDraw, ImageFont
 
+# themes
+# def theme(img, font):
+
 # use a good font!
 fontFile = "./assets/font/sahel/sahel.ttf"
 
