@@ -1,18 +1,18 @@
 # ===============================================================
-# Author: Ali Zareshahi & Mohammad Pooshesh
-# Email:
-# Twitter:
-# Telegram:
+# Author: Ali Zareshahi & Mohammad Pooshesh & Mohammad Alipour
 #
 # ABOUT COPYING OR USING PARTIAL INFORMATION:
-# This script was originally created by Ali Zareshahi & Mohammad Pooshesh. Any
+# This script was originally created by Ali Zareshahi & Mohammad Pooshesh & Mohammad Alipour. Any
 # explicit usage of this script or its contents is granted
 # according to the license provided and its conditions.
 # ===============================================================
 
-from telegram.ext import Updater, CommandHandler, MessageHandler, RegexHandler, ConversationHandler, Filters
-from bot import *
 import json
+
+from telegram.ext import (CommandHandler, ConversationHandler, Filters,
+                          MessageHandler, RegexHandler, Updater)
+
+from bot import *
 
 
 def main():
@@ -30,6 +30,7 @@ def main():
     telegram_token = config_json['telegram']['token']
     bot_obj = TweetNegarTelegramBot()
     bot_obj.main_bot(telegram_token)
+
 
 if __name__ == '__main__':
     main()
