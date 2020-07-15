@@ -1,7 +1,7 @@
 from requests_oauthlib import OAuth1Session
 
 
-class GetTwitterInfo():
+class GetTweetInfo():
     api = ''
 
     def __init__(self, id):
