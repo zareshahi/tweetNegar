@@ -1,7 +1,10 @@
-from telegram.ext import Updater, ConversationHandler, CommandHandler, MessageHandler, RegexHandler, ConversationHandler, Filters
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup, ChatAction, ReplyKeyboardMarkup, ReplyKeyboardRemove
-from functools import wraps
 import logging
+from functools import wraps
+
+from telegram import (ChatAction, InlineKeyboardButton, InlineKeyboardMarkup,
+                      ReplyKeyboardMarkup, ReplyKeyboardRemove)
+from telegram.ext import (CommandHandler, ConversationHandler, Filters,
+                          MessageHandler, RegexHandler, Updater)
 
 
 class TweetNegarTelegramBot:
