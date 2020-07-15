@@ -1,41 +1,36 @@
-from io import BytesIO
-import arabic_reshaper
-from bidi.algorithm import get_display
-from numpy import array, uint8, zeros
-from PIL import Image, ImageDraw, ImageFont
+# ===============================================================
+# Author: Ali Zareshahi & Mohammad Pooshesh & Mohammad Alipour
+#
+# ABOUT COPYING OR USING PARTIAL INFORMATION:
+# This script was originally created by Ali Zareshahi & Mohammad Pooshesh & Mohammad Alipour. Any
+# explicit usage of this script or its contents is granted
+# according to the license provided and its conditions.
+# ===============================================================
 
-def build_image(text="بسم الله الرحمان الرحیم",font_size=24,font_path='./assets/font/vazir/Vazir-Light.ttf',image_path='./assets/images/output/insta_storty.jpeg'):
+import json
 
-    # Make canvas and set the color
-    # TODO: use flexible size by user input
-    img = zeros((1920, 1080, 3), uint8)
-    b, g, r, a = 0, 255, 0, 0
+from telegram.ext import (CommandHandler, ConversationHandler, Filters,
+                          MessageHandler, RegexHandler, Updater)
 
-
-    # firts you must prepare your text (you dont need this for english text)
-    # TODO: change text size by text length
-    reshaped_text = arabic_reshaper.reshape(text)    # correct its shape
-    bidi_text = get_display(reshaped_text)           # correct its direction
+from bot import *
 
 
-    # Use vazir font
-    vazir_font = ImageFont.truetype(font_path, font_size)
+def main():
+    """
+    Main function.
+    This function handles the conversation flow by setting
+    states on each step of the flow. Each state has its own
+    handler for the interaction with the user.
+    """
+    # use config json file to hide security API keys
+    # config.json is git ignored - you can see this file template in config.template.json
+    with open('./config.json') as json_file:
+        config_json = json.load(json_file)
+    # set telegram token updater
+    telegram_token = config_json['telegram']['token']
+    bot_obj = TweetNegarTelegramBot()
+    bot_obj.main_bot(telegram_token)
 
-    end_image = Image.open(image_path)
-    draw = ImageDraw.Draw(end_image)
-    w, h = draw.textsize(text.encode('utf8'))
 
-    # Add text on image
-    draw.text(((img.shape[1]-w)/2, (img.shape[0]-h)/2),
-            bidi_text, font=vazir_font, fill=(b, g, r, a))
-
-    return end_image
-
-def get_image(id):
-    # save image to memory for send to telegram bot
-    bio = BytesIO()
-    bio.name = f'image{id}.jpeg'
-    img = build_image()
-    img.save(bio, 'JPEG')
-    bio.seek(0)
-    return bio
+if __name__ == '__main__':
+    main()
