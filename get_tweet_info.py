@@ -1,205 +1,133 @@
-# ===============================================================
-# Author: Ali Zareshahi & Mohammad Pooshesh
-# Email:
-# Twitter:
-# Telegram:
-#
-# ABOUT COPYING OR USING PARTIAL INFORMATION:
-# This script was originally created by Ali Zareshahi & Mohammad Pooshesh. Any
-# explicit usage of this script or its contents is granted
-# according to the license provided and its conditions.
-# ===============================================================
-
-from telegram.ext import Updater, CommandHandler, MessageHandler, RegexHandler, ConversationHandler, CallbackQueryHandler, Filters
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup, ChatAction, ReplyKeyboardMarkup, ReplyKeyboardRemove
-from functools import wraps
-from app import get_image
-import logging
-import json
-
-# Enable logging
-logging.basicConfig(
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    level=logging.INFO)
-
-logger = logging.getLogger(__name__)
-
-# Global vars:
-MENU, SET_STAT, GET_LINK = range(3)
-STATE = MENU
+from requests_oauthlib import OAuth1Session
 
 
-def action_status(action_type):
+class GetTwitterInfo():
+    api = ''
 
-    def is_typing_or_sending_action(func):
-        """is typing or sending action while processing func command."""
-        @wraps(func)
-        def command_func(*args, **kwargs):
+    def __init__(self, id):
+        self.__authorization()
 
-            bot, update = args
-            if action_type == "typing":
-                bot.send_chat_action(chat_id=update.message.chat_id,
-                                     action=ChatAction.TYPING)
-            elif action_type == "sending":
-                bot.send_chat_action(chat_id=update.message.chat_id,
-                                     action=ChatAction.UPLOAD_DOCUMENT)
-            func(bot, update, **kwargs)
+    def __authorization(self):
+        ''' authorize connection to twitter api 
+        '''
+        import json
+        # use config json file to hide security API keys
+        # config.json is git ignored - you can see this file template in
+        # config.template.json
+        with open('./config.json') as json_file:
+            config_json = json.load(json_file)
+        # initial config keys from config.json file
+        consumer_key = config_json['twitter']['api_key']
+        consumer_secret = config_json['twitter']['api_key_secret']
+        access_token = config_json['twitter']['access_token']
+        access_token_secret = config_json['twitter']['access_token_secret']
 
-        return command_func
+        try:
+            params = {"ids": "1282931844716126208", "format": "detailed"}
+            # Make the request
+            api = OAuth1Session(consumer_key,
+                                client_secret=consumer_secret,
+                                resource_owner_key=access_token,
+                                resource_owner_secret=access_token_secret)
+            response = api.get(
+                "https://api.twitter.com/labs/2/tweets?", params=params)
+            print("Response status: %s" % response.status_code)
+            print("Body: %s" % response.text)
 
-    return is_typing_or_sending_action
+        except:
+            print('some authorization error')
 
+    def get_text(self, tweet_id):
+        ''' get tweet long text by tweet id
+        '''
+        status = self.get_status(id=tweet_id, tweet_mode="extended")
+        try:
+            return status.retweeted_status.full_text
+        except AttributeError:  # Not a Retweet
+            try:
+                return status.full_text
+            except:
+                return 'Not Found!'
 
-@action_status("sending")
-def image_builder(bot, update):
-    chat_id = update.message.chat_id
-    image = get_image(chat_id)
-    bot.sendDocument(chat_id=chat_id, document=image)
+    def get_author(self, tweet_id):
+        ''' get tweet author profile detail
+        '''
+        status = self.get_status(id=tweet_id, tweet_mode="extended")
+        try:
+            author = status.author
+            author_detail = {
+                'id': author.id,
+                'name': author.name,
+                'username': author.screen_name,
+                'profile_image': author.profile_image_url
+            }
+            return author_detail
+        except AttributeError:  # Not a Retweet
+            return 'AttributeError'
 
-
-@action_status("typing")
-def start(bot, update):
-    """
-    Start function. Displayed whenever the /start command is called.
-    This function is for base menu of the bot.
-    """
-    # Create buttons to slect menu:
-    keyboard = [['تنظیمات', 'ایجاد طرح جدید'], ['درباره ما']]
-
-    # Create initial message:
-    message = "سلام من توییت نگارم. چه کمکی میتونم بهت بکنم؟"
-
-    reply_markup = ReplyKeyboardMarkup(keyboard,
-                                       one_time_keyboard=True,
-                                       resize_keyboard=True)
-    update.message.reply_text(message, reply_markup=reply_markup)
-
-    return MENU
-
-
-@action_status("typing")
-def menu(bot, update):
-    global STATE
-    global Select
-    Select = update.message.text
-    user = update.message.from_user
-
-    logger.info("Select option by {} to {}.".format(user.first_name, Select))
-
-    if update.message.text == 'ایجاد طرح جدید':
-        update.message.reply_text("لطفا لینک توییت خود را وارد کنید",
-                                  reply_markup=ReplyKeyboardRemove())
-        return GET_LINK
-
-    elif update.message.text == 'تنظیمات':
-        update.message.reply_text("لطفا گزینه مورد نظر را انتخاب کنید",
-                                  reply_markup=ReplyKeyboardRemove())
-        return MENU
-
-    elif update.message.text == 'درباره ما':
-        about_bot(bot, update)
-
-    else:
-        return MENU
+    def get_status(self, id, tweet_mode='extended'):
+        try:
+            return api.get_status(id=id, tweet_mode="extended")
+        except:
+            return ''
 
 
-@action_status("typing")
-def get_link(bot, update):
-    user = update.message.from_user
-    logger.info("user {} send tweet link.".format(user.first_name))
-    bot.send_message(chat_id=update.message.chat_id, text=update.message.text)
-    return
+# # use tweepy to authorization twitter api
+# auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
+# auth.set_access_token(access_token, access_token_secret)
 
+# api = tweepy.API(auth)
 
-@action_status("typing")
-def about_bot(bot, update):
-    """
-    About function. Displays info about DisAtBot.
-    """
-    user = update.message.from_user
-    logger.info("About info requested by {}.".format(user.first_name))
-    text = """
-    ربات توییت نگار اولین ربات طراحی و ایجاد تصاویر جذاب برای توییت های شما است.
-    """
-    update.message.reply_text(text,
-                              reply_markup=ReplyKeyboardRemove())
-    return
+samples = {
+    'with_photo': {
+        'id': 1282931844716126208,
+        'url': 'https://twitter.com/m_mkia8/status/1282931844716126208?s=20'
+    },
+    'normal': {
+        'id': 1282932074584973313,
+        'url': 'https://twitter.com/zohreyezahra/status/1282932074584973313?s=20'
+    },
+    'qute': {
+        'id': 1282821340043542529,
+        'url': 'https://twitter.com/syjebraily/status/1282821340043542529?s=20'
+    },
+    'reply': {
+        'id': 1282931657121468417,
+        'url': 'https://twitter.com/mohammad_amin23/status/1282931657121468417?s=20'
+    },
+    'retweet': {
+        'id': 1282732786688958464,
+        'url': 'https://twitter.com/pariis_tar/status/1282732786688958464?s=20'
+    },
+    'removed': {
+        'id': 1283001644892909568,
+        'url': 'https://twitter.com/moeb_ir/status/1282927709795090432'
+    },
+    'video': {
+        'id': 1233848803914059781,
+        'url': 'https://twitter.com/Alireza_gh_97_4/status/1233848803914059781?s=20'
+    },
+    'rashto': {
+        'id': 1279989094349750272,
+        'url': 'https://twitter.com/MortezaJaliliIR/status/1279989094349750272?s=20'
+    }
+}
 
+twitter = GetTwitterInfo(id=1279989094349750272)
 
-@action_status("typing")
-def help(bot, update):
-    """
-    Help function.
-    This displays a set of commands available for the bot.
-    """
-    user = update.message.from_user
-    logger.info("User {} asked for help.".format(user.first_name))
-    update.message.reply_text("help_info[LANG]",
-                              reply_markup=ReplyKeyboardRemove())
-
-
-@action_status("typing")
-def cancel(bot, update):
-    """
-    User cancelation function.
-    Cancel conersation by user.
-    """
-    user = update.message.from_user
-    logger.info("User {} canceled the conversation.".format(user.first_name))
-    update.message.reply_text("ممنون که ما رو انتخاب کردی",
-                              reply_markup=ReplyKeyboardRemove())
-
-    return ConversationHandler.END
-
-
-@action_status("typing")
-def error(bot, update, error):
-    """Log Errors caused by Updates."""
-    logger.warning('Update "%s" caused error "%s"', update, error)
-
-
-def main():
-    """
-    Main function.
-    This function handles the conversation flow by setting
-    states on each step of the flow. Each state has its own
-    handler for the interaction with the user.
-    """
-    # use config json file to hide security API keys
-    # config.json is git ignored - you can see this file template in
-    # config.template.json
-    with open('./config.json') as json_file:
-        config_json = json.load(json_file)
-    # set telegram token updater
-    telegram_token = config_json['telegram']['token']
-    updater = Updater(telegram_token)
-    dp = updater.dispatcher
-
-    # Add conversation handler with predefined states:
-    conv_handler = ConversationHandler(
-        entry_points=[CommandHandler('start', start)],
-
-        states={
-            MENU: [RegexHandler('^(تنظیمات|ایجاد طرح جدید|درباره ما)$', menu)],
-            GET_LINK: [MessageHandler(Filters.text, get_link)]
-        },
-
-        fallbacks=[CommandHandler('cancel', cancel),
-                   CommandHandler('help', help)]
-    )
-
-    dp.add_handler(conv_handler)
-
-    # Log all errors:
-    dp.add_error_handler(error)
-
-    # Start DisAtBot:
-    updater.start_polling()
-
-    # Run the bot until the user presses Ctrl-C or the process
-    # receives SIGINT, SIGTERM or SIGABRT:
-    updater.idle()
-
-
-if __name__ == '__main__':
-    main()
+# get tweet by list of id
+# # public_tweets = api.statuses_lookup([1281841440570650625, 1281969401420554241])
+# try:
+#     file = open('tmp/tweet.txt', 'w')
+#     for tweet in samples:
+#         tid = samples[tweet]['id']
+#         file.write(twitter.get_text(tid))
+#         file.writelines('\n')
+#         file.writelines('\n')
+#         file.write(twitter.get_author(tid)['name'])
+#         file.writelines('\n')
+#         file.write('==========================================================')
+#         file.writelines('\n')
+#     file.close()
+# except expression as identifier:
+#     pass
