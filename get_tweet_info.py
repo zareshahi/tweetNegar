@@ -113,7 +113,7 @@ samples = {
     }
 }
 
-twitter = GetTwitterInfo(id=1279989094349750272)
+twitter = GetTweetInfo(id=1279989094349750272)
 
 # get tweet by list of id
 # # public_tweets = api.statuses_lookup([1281841440570650625, 1281969401420554241])
