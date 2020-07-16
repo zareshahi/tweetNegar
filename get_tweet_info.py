@@ -7,9 +7,7 @@ from requests_oauthlib import OAuth1Session
 
 class GetTweetInfo():
     __api = ''
-    __status = {
-        'id': ''
-    }
+    __status = ''
 
     def __init__(self):
         self.__authorization()
@@ -62,12 +60,12 @@ class GetTweetInfo():
     def __get_status(self, id, tweet_mode='extended'):
         ''' get tweet id and return tweet status if exist
         '''
-        if (self.__status['id'] == id):
+        if (self.__status and self.__status.id == id):
             return self.__status
         else:
             try:
                 self.__status = self.__api.get_status(
-                    id=id, tweet_mode=tweet_mode)._json
+                    id=id, tweet_mode=tweet_mode)
                 return self.__status
             except:
                 return ''
