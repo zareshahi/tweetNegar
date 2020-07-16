@@ -1,3 +1,6 @@
+import json
+import re
+
 import tweepy
 from requests_oauthlib import OAuth1Session
 
@@ -9,7 +12,6 @@ class GetTweetInfo():
         self.__authorization()
 
     def __authorization(self):
-        import json
         # use config json file to hide security API keys
         # config.json is git ignored - you can see this file template in
         # config.template.json
@@ -31,10 +33,10 @@ class GetTweetInfo():
         '''
         status = self.get_status(id=tweet_id, tweet_mode="extended")
         try:
-            return status.retweeted_status.full_text
+            return re.sub(r"http\S+$", "", status.retweeted_status.full_text)
         except AttributeError:  # Not a Retweet
             try:
-                return status.full_text
+                return re.sub(r"http\S+$", "", status.full_text)
             except:
                 return 'Not Found!'
 
