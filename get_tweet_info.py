@@ -63,6 +63,8 @@ class GetTweetInfo():
             return ''
 
     def get_tweet(self, id):
+        ''' get tweet id and return tweet text and user in json format
+        '''
         tweet_text = self.get_text(id)
         tweet_author = self.get_author(id)
         return {
