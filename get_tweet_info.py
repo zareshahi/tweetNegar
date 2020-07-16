@@ -6,7 +6,10 @@ from requests_oauthlib import OAuth1Session
 
 
 class GetTweetInfo():
-    api = ''
+    __api = ''
+    __status = {
+        'id': ''
+    }
 
     def __init__(self):
         self.__authorization()
@@ -26,12 +29,12 @@ class GetTweetInfo():
         auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
         auth.set_access_token(access_token, access_token_secret)
 
-        self.api = tweepy.API(auth)
+        self.__api = tweepy.API(auth)
 
     def get_text(self, tweet_id):
         ''' get tweet long text by tweet id
         '''
-        status = self.get_status(id=tweet_id, tweet_mode="extended")
+        status = self.__get_status(id=tweet_id, tweet_mode="extended")
         try:
             return re.sub(r"http\S+$", "", status.retweeted_status.full_text)
         except AttributeError:  # Not a Retweet
@@ -43,7 +46,7 @@ class GetTweetInfo():
     def get_author(self, tweet_id):
         ''' get tweet author profile detail
         '''
-        status = self.get_status(id=tweet_id, tweet_mode="extended")
+        status = self.__get_status(id=tweet_id, tweet_mode="extended")
         try:
             author = status.author
             author_detail = {
@@ -56,11 +59,18 @@ class GetTweetInfo():
         except AttributeError:  # Not a Retweet
             return 'AttributeError'
 
-    def get_status(self, id, tweet_mode='extended'):
-        try:
-            return self.api.get_status(id=id, tweet_mode="extended")
-        except:
-            return ''
+    def __get_status(self, id, tweet_mode='extended'):
+        ''' get tweet id and return tweet status if exist
+        '''
+        if (self.__status['id'] == id):
+            return self.__status
+        else:
+            try:
+                self.__status = self.__api.get_status(
+                    id=id, tweet_mode=tweet_mode)._json
+                return self.__status
+            except:
+                return ''
 
     def get_tweet(self, id):
         ''' get tweet id and return tweet text and user in json format
