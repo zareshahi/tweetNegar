@@ -107,20 +107,10 @@ samples = {
 }
 
 twitter = GetTweetInfo()
-print(twitter.get_tweet(id=1279989094349750272))
-# get tweet by list of id
-# # public_tweets = api.statuses_lookup([1281841440570650625, 1281969401420554241])
-# try:
-#     file = open('tmp/tweet.txt', 'w')
-#     for tweet in samples:
-#         tid = samples[tweet]['id']
-#         file.write(twitter.get_text(tid))
-#         file.writelines('\n')
-#         file.writelines('\n')
-#         file.write(twitter.get_author(tid)['name'])
-#         file.writelines('\n')
-#         file.write('==========================================================')
-#         file.writelines('\n')
-#     file.close()
-# except expression as identifier:
-#     pass
+json_data = []
+
+for tweet in samples:
+    tid = samples[tweet]['id']
+    json_data.append(twitter.get_tweet(tid))
+with open('tmp/tweet.json', 'w', encoding='utf8') as outjson:
+    json.dump(json_data, outjson, ensure_ascii=False)
