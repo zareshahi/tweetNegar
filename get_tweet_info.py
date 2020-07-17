@@ -2,7 +2,6 @@ import json
 import re
 import jdatetime
 import tweepy
-from requests_oauthlib import OAuth1Session
 
 
 class GetTweetInfo():
