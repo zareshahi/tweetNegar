@@ -1,15 +1,17 @@
+import json
+import re
+import jdatetime
 import tweepy
-from requests_oauthlib import OAuth1Session
 
 
 class GetTweetInfo():
-    api = ''
+    __api = ''
+    __status = ''
 
     def __init__(self):
         self.__authorization()
 
     def __authorization(self):
-        import json
         # use config json file to hide security API keys
         # config.json is git ignored - you can see this file template in
         # config.template.json
@@ -24,48 +26,121 @@ class GetTweetInfo():
         auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
         auth.set_access_token(access_token, access_token_secret)
 
-        self.api = tweepy.API(auth)
+        self.__api = tweepy.API(auth)
 
     def get_text(self, tweet_id):
         ''' get tweet long text by tweet id
         '''
-        status = self.get_status(id=tweet_id, tweet_mode="extended")
+        status = self.__get_status(id=tweet_id, tweet_mode="extended")
         try:
-            return status.retweeted_status.full_text
+            full_text = re.sub(
+                r"http\S+$", "", status.retweeted_status.full_text)
+            return {
+                'code': '1',
+                'data': full_text,
+                'message': None
+            }
         except AttributeError:  # Not a Retweet
             try:
-                return status.full_text
+                full_text = re.sub(r"http\S+$", "", status.full_text)
+                return {
+                    'code': '1',
+                    'data': full_text,
+                    'message': None
+                }
             except:
-                return 'Not Found!'
+                return {
+                    'code': '2',
+                    'data': None,
+                    'message': "Not Found! - Attribute Error!"
+                }
 
-    def get_author(self, tweet_id):
-        ''' get tweet author profile detail
+    def get_user(self, tweet_id):
+        ''' get tweet user profile detail
         '''
-        status = self.get_status(id=tweet_id, tweet_mode="extended")
+        status = self.__get_status(id=tweet_id, tweet_mode="extended")
         try:
-            author = status.author
-            author_detail = {
-                'id': author.id,
-                'name': author.name,
-                'username': author.screen_name,
-                'profile_image': author.profile_image_url
+            user = status.user
+            user_detail = {
+                'id': user.id,
+                'name': user.name,
+                'screen_name': user.screen_name,
+                'profile_image_url': user.profile_image_url
             }
-            return author_detail
+            return {
+                'code': '1',
+                'data': user_detail,
+                'message': None
+            }
         except AttributeError:  # Not a Retweet
-            return 'AttributeError'
+            return {
+                'code': '2',
+                'data': None,
+                'message': "Not Found! - Attribute Error!"
+            }
 
-    def get_status(self, id, tweet_mode='extended'):
+    def get_date(self, id, lang=''):
+        ''' return tweet post date time
+        '''
         try:
-            return self.api.get_status(id=id, tweet_mode="extended")
-        except:
-            return ''
+            status = self.__get_status(id)
+            status_date = status.created_at
+            date = jdatetime.GregorianToJalali(
+                status_date.year, status_date.month, status_date.day)
+            if status.lang == 'fa' or lang == 'fa':
+                return {
+                    'code': '1',
+                    'data': {
+                        'year': date.jyear,
+                        'month': date.jmonth,
+                        'day': date.jday,
+                        'time': status_date.strftime('%H:%M')
+                    },
+                    'message': None
+                }
+            else:
+                return {
+                    'code': '1',
+                    'data': {
+                        'year': date.gyear,
+                        'month': date.gmonth,
+                        'day': date.gday,
+                        'time': status_date.strftime('%H:%M')
+                    },
+                    'message': None
+                }
+        except AttributeError:
+            return {
+                'code': '2',
+                'data': None,
+                'message': "Not Found! - Attribute Error!"
+            }
+
+    def __get_status(self, id, tweet_mode='extended'):
+        ''' get tweet id and return tweet status if exist
+        '''
+        if (self.__status and self.__status.id == id):
+            return self.__status
+        else:
+            try:
+                self.__status = self.__api.get_status(
+                    id=id, tweet_mode=tweet_mode)
+                return self.__status
+            except:
+                return ''
 
     def get_tweet(self, id):
+        ''' get tweet id and return tweet text and user in json format
+        '''
         tweet_text = self.get_text(id)
-        tweet_author = self.get_author(id)
+        tweet_user = self.get_user(id)
+        tweet_date = self.get_date(id)
         return {
-            'tweet': tweet_text,
-            'author': tweet_author
+            'tweet': {
+                'full_text': tweet_text['data'],
+                'created_at': tweet_date['data']
+            },
+            'user': tweet_user['data']
         }
 
 
@@ -101,24 +176,18 @@ samples = {
     'rashto': {
         'id': 1279989094349750272,
         'url': 'https://twitter.com/MortezaJaliliIR/status/1279989094349750272?s=20'
+    },
+    'english': {
+        'id': 1282389642470457345,
+        'url': 'https://twitter.com/khamenei_ir/status/1282389642470457345?s=20'
     }
 }
 
 twitter = GetTweetInfo()
-print(twitter.get_tweet(id=1279989094349750272))
-# get tweet by list of id
-# # public_tweets = api.statuses_lookup([1281841440570650625, 1281969401420554241])
-# try:
-#     file = open('tmp/tweet.txt', 'w')
-#     for tweet in samples:
-#         tid = samples[tweet]['id']
-#         file.write(twitter.get_text(tid))
-#         file.writelines('\n')
-#         file.writelines('\n')
-#         file.write(twitter.get_author(tid)['name'])
-#         file.writelines('\n')
-#         file.write('==========================================================')
-#         file.writelines('\n')
-#     file.close()
-# except expression as identifier:
-#     pass
+json_data = []
+
+for tweet in samples:
+    tid = samples[tweet]['id']
+    json_data.append(twitter.get_tweet(tid))
+with open('tmp/tweet.json', 'w', encoding='utf8') as outjson:
+    json.dump(json_data, outjson, ensure_ascii=False)
