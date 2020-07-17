@@ -1,15 +1,14 @@
+import tweepy
 from requests_oauthlib import OAuth1Session
 
 
-class GetTwitterInfo():
+class GetTweetInfo():
     api = ''
 
-    def __init__(self, id):
+    def __init__(self):
         self.__authorization()
 
     def __authorization(self):
-        ''' authorize connection to twitter api 
-        '''
         import json
         # use config json file to hide security API keys
         # config.json is git ignored - you can see this file template in
@@ -21,21 +20,11 @@ class GetTwitterInfo():
         consumer_secret = config_json['twitter']['api_key_secret']
         access_token = config_json['twitter']['access_token']
         access_token_secret = config_json['twitter']['access_token_secret']
+        # use tweepy to authorization twitter api
+        auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
+        auth.set_access_token(access_token, access_token_secret)
 
-        try:
-            params = {"ids": "1282931844716126208", "format": "detailed"}
-            # Make the request
-            api = OAuth1Session(consumer_key,
-                                client_secret=consumer_secret,
-                                resource_owner_key=access_token,
-                                resource_owner_secret=access_token_secret)
-            response = api.get(
-                "https://api.twitter.com/labs/2/tweets?", params=params)
-            print("Response status: %s" % response.status_code)
-            print("Body: %s" % response.text)
-
-        except:
-            print('some authorization error')
+        self.api = tweepy.API(auth)
 
     def get_text(self, tweet_id):
         ''' get tweet long text by tweet id
@@ -67,16 +56,18 @@ class GetTwitterInfo():
 
     def get_status(self, id, tweet_mode='extended'):
         try:
-            return api.get_status(id=id, tweet_mode="extended")
+            return self.api.get_status(id=id, tweet_mode="extended")
         except:
             return ''
 
+    def get_tweet(self, id):
+        tweet_text = self.get_text(id)
+        tweet_author = self.get_author(id)
+        return {
+            'tweet': tweet_text,
+            'author': tweet_author
+        }
 
-# # use tweepy to authorization twitter api
-# auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
-# auth.set_access_token(access_token, access_token_secret)
-
-# api = tweepy.API(auth)
 
 samples = {
     'with_photo': {
@@ -113,8 +104,8 @@ samples = {
     }
 }
 
-twitter = GetTwitterInfo(id=1279989094349750272)
-
+twitter = GetTweetInfo()
+print(twitter.get_tweet(id=1279989094349750272))
 # get tweet by list of id
 # # public_tweets = api.statuses_lookup([1281841440570650625, 1281969401420554241])
 # try:
