@@ -1,6 +1,6 @@
 import json
 import re
-
+import jdatetime
 import tweepy
 from requests_oauthlib import OAuth1Session
 
@@ -57,6 +57,43 @@ class GetTweetInfo():
         except AttributeError:  # Not a Retweet
             return 'AttributeError'
 
+    def get_date(self, id, lang=''):
+        ''' return tweet post date time
+        '''
+        try:
+            status = self.__get_status(id)
+            status_date = status.created_at
+            date = jdatetime.GregorianToJalali(
+                status_date.year, status_date.month, status_date.day)
+            if status.lang == 'fa' or lang == 'fa':
+                return {
+                    'code': '1',
+                    'data': {
+                        'year': date.jyear,
+                        'month': date.jmonth,
+                        'day': date.jday,
+                        'time': status_date.strftime('%H:%M')
+                    },
+                    'message': None
+                }
+            else:
+                return {
+                    'code': '1',
+                    'data': {
+                        'year': date.gyear,
+                        'month': date.gmonth,
+                        'day': date.gday,
+                        'time': status_date.strftime('%H:%M')
+                    },
+                    'message': None
+                }
+        except AttributeError:
+            return {
+                'code': '2',
+                'data': None,
+                'message': "Not Found! - Attribute Error!"
+            }
+
     def __get_status(self, id, tweet_mode='extended'):
         ''' get tweet id and return tweet status if exist
         '''
@@ -75,9 +112,11 @@ class GetTweetInfo():
         '''
         tweet_text = self.get_text(id)
         tweet_user = self.get_user(id)
+        tweet_date = self.get_date(id)
         return {
             'tweet': {
                 'full_text': tweet_text,
+                'created_at': tweet_date['data']
             },
             'user': tweet_user
         }
@@ -115,6 +154,10 @@ samples = {
     'rashto': {
         'id': 1279989094349750272,
         'url': 'https://twitter.com/MortezaJaliliIR/status/1279989094349750272?s=20'
+    },
+    'english': {
+        'id': 1282389642470457345,
+        'url': 'https://twitter.com/khamenei_ir/status/1282389642470457345?s=20'
     }
 }
 
