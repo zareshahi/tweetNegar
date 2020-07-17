@@ -41,19 +41,19 @@ class GetTweetInfo():
             except:
                 return 'Not Found!'
 
-    def get_author(self, tweet_id):
-        ''' get tweet author profile detail
+    def get_user(self, tweet_id):
+        ''' get tweet user profile detail
         '''
         status = self.__get_status(id=tweet_id, tweet_mode="extended")
         try:
-            author = status.author
-            author_detail = {
-                'id': author.id,
-                'name': author.name,
-                'username': author.screen_name,
-                'profile_image': author.profile_image_url
+            user = status.user
+            user_detail = {
+                'id': user.id,
+                'name': user.name,
+                'screen_name': user.screen_name,
+                'profile_image_url': user.profile_image_url
             }
-            return author_detail
+            return user_detail
         except AttributeError:  # Not a Retweet
             return 'AttributeError'
 
@@ -74,10 +74,12 @@ class GetTweetInfo():
         ''' get tweet id and return tweet text and user in json format
         '''
         tweet_text = self.get_text(id)
-        tweet_author = self.get_author(id)
+        tweet_user = self.get_user(id)
         return {
-            'tweet': tweet_text,
-            'author': tweet_author
+            'tweet': {
+                'full_text': tweet_text,
+            },
+            'user': tweet_user
         }
 
 
