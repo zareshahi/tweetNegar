@@ -33,12 +33,27 @@ class GetTweetInfo():
         '''
         status = self.__get_status(id=tweet_id, tweet_mode="extended")
         try:
-            return re.sub(r"http\S+$", "", status.retweeted_status.full_text)
+            full_text = re.sub(
+                r"http\S+$", "", status.retweeted_status.full_text)
+            return {
+                'code': '1',
+                'data': full_text,
+                'message': None
+            }
         except AttributeError:  # Not a Retweet
             try:
-                return re.sub(r"http\S+$", "", status.full_text)
+                full_text = re.sub(r"http\S+$", "", status.full_text)
+                return {
+                    'code': '1',
+                    'data': full_text,
+                    'message': None
+                }
             except:
-                return 'Not Found!'
+                return {
+                    'code': '2',
+                    'data': None,
+                    'message': "Not Found! - Attribute Error!"
+                }
 
     def get_user(self, tweet_id):
         ''' get tweet user profile detail
@@ -52,9 +67,17 @@ class GetTweetInfo():
                 'screen_name': user.screen_name,
                 'profile_image_url': user.profile_image_url
             }
-            return user_detail
+            return {
+                'code': '1',
+                'data': user_detail,
+                'message': None
+            }
         except AttributeError:  # Not a Retweet
-            return 'AttributeError'
+            return {
+                'code': '2',
+                'data': None,
+                'message': "Not Found! - Attribute Error!"
+            }
 
     def get_date(self, id, lang=''):
         ''' return tweet post date time
@@ -114,10 +137,10 @@ class GetTweetInfo():
         tweet_date = self.get_date(id)
         return {
             'tweet': {
-                'full_text': tweet_text,
+                'full_text': tweet_text['data'],
                 'created_at': tweet_date['data']
             },
-            'user': tweet_user
+            'user': tweet_user['data']
         }
 
 
