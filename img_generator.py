@@ -8,7 +8,22 @@ from bidi.algorithm import get_display
 from PIL import Image, ImageDraw, ImageFont
 
 # themes
-# def theme(img, font):
+# class theme:
+#     background = ''
+#     font = ''
+#     profile_location = (10, 10)
+#     username_location = (11, 11)
+#     tweet_location = (12, 12)
+#     contents_location = (13, 13)
+
+# first theme added
+# theme1 = theme()
+# theme1.background = './assets/images/input/tweetNegar.jpg'
+# theme1.font = './assets/font/sahel/sahel.ttf'
+# theme1.profile_location = (755, 595)
+# theme1.username_location = (400, 650)
+# theme1.tweet_location = (300, 850)
+# theme1.contents_location = ('x', 'y')
 
 # use a good font!
 fontFile = "./assets/font/sahel/sahel.ttf"
