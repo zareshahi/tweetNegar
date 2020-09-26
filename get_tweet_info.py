@@ -9,9 +9,15 @@ class GetTweetInfo():
     __status = ''
 
     def __init__(self):
-        self.__authorization()
+        self.__api = self.__authorization()
 
     def __authorization(self):
+        """authorize the tweepy api with config.json file
+
+        Returns:
+            [tweepy.API]: [(success) set api in __api global variable]
+            [string]: [(failed) return failed message and print out]
+        """
         try:
             # use config json file to hide security API keys
             # config.json is git ignored - you can see this file template in
@@ -26,7 +32,7 @@ class GetTweetInfo():
             # use tweepy to authorization twitter api
             auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
             auth.set_access_token(access_token, access_token_secret)
-            self.__api = tweepy.API(auth)
+            return tweepy.API(auth)
         except:
             print('Authorization Exception')
             return 'Authorization Exception'
