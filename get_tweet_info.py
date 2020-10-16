@@ -12,21 +12,24 @@ class GetTweetInfo():
         self.__authorization()
 
     def __authorization(self):
-        # use config json file to hide security API keys
-        # config.json is git ignored - you can see this file template in
-        # config.template.json
-        with open('./config.json') as json_file:
-            config_json = json.load(json_file)
-        # initial config keys from config.json file
-        consumer_key = config_json['twitter']['api_key']
-        consumer_secret = config_json['twitter']['api_key_secret']
-        access_token = config_json['twitter']['access_token']
-        access_token_secret = config_json['twitter']['access_token_secret']
-        # use tweepy to authorization twitter api
-        auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
-        auth.set_access_token(access_token, access_token_secret)
-
-        self.__api = tweepy.API(auth)
+        try:
+            # use config json file to hide security API keys
+            # config.json is git ignored - you can see this file template in
+            # config.template.json
+            with open('./config.json') as json_file:
+                config_json = json.load(json_file)
+            # initial config keys from config.json file
+            consumer_key = config_json['twitter']['api_key']
+            consumer_secret = config_json['twitter']['api_key_secret']
+            access_token = config_json['twitter']['access_token']
+            access_token_secret = config_json['twitter']['access_token_secret']
+            # use tweepy to authorization twitter api
+            auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
+            auth.set_access_token(access_token, access_token_secret)
+            self.__api = tweepy.API(auth)
+        except:
+            print('Authorization Exception')
+            return 'Authorization Exception'
 
     def get_text(self, tweet_id):
         ''' get tweet long text by tweet id
