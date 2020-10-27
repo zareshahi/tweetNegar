@@ -43,7 +43,7 @@ reshaped_text = arabic_reshaper.reshape(username)    # correct its shape
 bidi_name = get_display(reshaped_text)
 
 # tweet content
-text =  tweet_content[:40] + '\n' + tweet_content[40:80] + '\n' + tweet_content[80:120] + '\n' + tweet_content[120:160] + '\n' + tweet_content[160:200] + '\n' + tweet_content[200:240] + '\n' + tweet_content[240:280]
+text =  tweet_content[:44] + '\n' + tweet_content[44:80] + '\n' + tweet_content[80:120] + '\n' + tweet_content[120:160] + '\n' + tweet_content[160:200] + '\n' + tweet_content[200:240] + '\n' + tweet_content[240:280]
 # Content Should Wrap in a Better Way, this is just for test!!
 
 reshaped_text = arabic_reshaper.reshape(text)    # correct its shape
