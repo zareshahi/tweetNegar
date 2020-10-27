@@ -15,8 +15,8 @@ class GetTweetInfo():
         """authorize the tweepy api with config.json file
 
         Returns:
-            [tweepy.API]: [(success) set api in __api global variable]
-            [string]: [(failed) return failed message and print out]
+            tweepy.API: (success) set api in __api global variable
+            string: (failed) return failed message and print out
         """
         try:
             # use config json file to hide security API keys
@@ -38,16 +38,24 @@ class GetTweetInfo():
             return 'Authorization Exception'
 
     def get_text(self, tweet_id):
-        ''' get tweet long text by tweet id
-        '''
+        """ get tweet long text by tweet id
+
+        Args:
+            tweet_id (integer): id of tweet in twitter link
+
+        Returns:
+            json: code status with tweet full text without tweet link
+        """
+
         status = self.__get_status(id=tweet_id, tweet_mode="extended")
         try:
+            # remove tweet link from end of tweet by regex
             full_text = re.sub(
                 r"http\S+$", "", status.retweeted_status.full_text)
             return {
                 'code': '1',
                 'data': full_text,
-                'message': None
+                'message': 'Success!'
             }
         except AttributeError:  # Not a Retweet
             try:
@@ -55,7 +63,7 @@ class GetTweetInfo():
                 return {
                     'code': '1',
                     'data': full_text,
-                    'message': None
+                    'message': 'Success!'
                 }
             except:
                 return {
@@ -65,8 +73,14 @@ class GetTweetInfo():
                 }
 
     def get_user(self, tweet_id):
-        ''' get tweet user profile detail
-        '''
+        """get tweet user profile detail
+
+        Args:
+            tweet_id (integer): get tweet id from tweet link
+
+        Returns:
+            json: return operation with code and user detail data
+        """
         status = self.__get_status(id=tweet_id, tweet_mode="extended")
         try:
             user = status.user
@@ -89,8 +103,15 @@ class GetTweetInfo():
             }
 
     def get_date(self, id, lang=''):
-        ''' return tweet post date time
-        '''
+        """dreturn tweet post date time
+
+        Args:
+            id (integer): tweet id from tweet link
+            lang (str, optional): tweet language that set date type. Defaults to '' that mean en.
+
+        Returns:
+            json: operation with resualt and tweet date.
+        """
         try:
             status = self.__get_status(id)
             status_date = status.created_at
@@ -108,6 +129,7 @@ class GetTweetInfo():
                     'message': None
                 }
             else:
+                # English mode | none persian
                 return {
                     'code': '1',
                     'data': {
@@ -126,8 +148,15 @@ class GetTweetInfo():
             }
 
     def __get_status(self, id, tweet_mode='extended'):
-        ''' get tweet id and return tweet status if exist
-        '''
+        """get tweet id and return tweet status if exist
+
+        Args:
+            id (integer): tweet id
+            tweet_mode (str, optional): tweet status details mode. Defaults to 'extended'.
+
+        Returns:
+            list | apiMethod: tweet status and details
+        """
         if (self.__status and self.__status.id == id):
             return self.__status
         else:
@@ -139,8 +168,14 @@ class GetTweetInfo():
                 return ''
 
     def get_tweet(self, id):
-        ''' get tweet id and return tweet text and user in json format
-        '''
+        """get tweet id and return tweet text and user in json format
+
+        Args:
+            id (integer): tweet id
+
+        Returns:
+            json: tweet details (full text and creation date and user)
+        """
         tweet_text = self.get_text(id)
         tweet_user = self.get_user(id)
         tweet_date = self.get_date(id)
