@@ -6,17 +6,20 @@ import arabic_reshaper
 from bidi.algorithm import get_display
 # install: pip install Pillow
 from PIL import Image, ImageDraw, ImageFont
-
-import json
+# preinstalled in python
 import urllib.request
+# preinstalled in python
+import textwrap
+# preinstalled in python
+import json
 
+# read json file
 with open(r'tmp/tweet.json', encoding='utf8') as json_file:
     data = json.load(json_file)
     for p in data:
         user_name = p['user']['name']
         profile = p['user']['profile_image_url']
         tweet_content = p['tweet']['full_text']
-
 
 # themes
 # def theme(img, font):
@@ -28,12 +31,11 @@ fontFile = "./assets/font/sahel/sahel.ttf"
 imageFile = "./assets/images/input/tweetNegar.jpg"
 
 # load the profile photo
-# profile = Image.open("./assets/user/profile.jpg")
-urllib.request.urlretrieve(profile, "./assets/user/profile0.jpg") # Save Profile Photo
-user_profile = Image.open("./assets/user/profile0.jpg")
+urllib.request.urlretrieve(profile, "./assets/user/profile0.jpg") # Save Profile Photo from twitter
+user_profile = Image.open("./assets/user/profile0.jpg") # load profile photo
 profile = user_profile.resize((180, 180))
 
-# load the font and image
+# load the font and theme image
 font = ImageFont.truetype(fontFile, 50)
 image = Image.open(imageFile)
 
@@ -43,8 +45,10 @@ reshaped_text = arabic_reshaper.reshape(username)    # correct its shape
 bidi_name = get_display(reshaped_text)
 
 # tweet content
-text =  tweet_content[:44] + '\n' + tweet_content[44:80] + '\n' + tweet_content[80:120] + '\n' + tweet_content[120:160] + '\n' + tweet_content[160:200] + '\n' + tweet_content[200:240] + '\n' + tweet_content[240:280]
 # Content Should Wrap in a Better Way, this is just for test!!
+my_wrap = textwrap.TextWrapper(width = 30)
+wrap_list = my_wrap.wrap(text=tweet_content)
+text = ''
 
 reshaped_text = arabic_reshaper.reshape(text)    # correct its shape
 bidi_text = get_display(reshaped_text)           # correct its direction
@@ -58,9 +62,15 @@ cy = h//2
 
 # start drawing on image
 draw = ImageDraw.Draw(image)
-draw.text((400, 650), bidi_name, (25, 25, 100), font=font, spacing=0, align='right')
 
-draw.multiline_text((300, 850), bidi_text, fill='black', font=font, spacing=10, align='right')
+draw.text((400, 650), bidi_name, (25, 25, 100), font=font, spacing=0, align='left')
+
+th = 850
+for text in wrap_list:
+    reshaped_text = arabic_reshaper.reshape(text)    # correct its shape
+    bidi_text = get_display(reshaped_text)           # correct its direction
+    draw.multiline_text((240, th), bidi_text, fill='black', font=font, spacing=10, align='left')
+    th = th + 60 # space between each line
 
 draw = ImageDraw.Draw(image)
 
