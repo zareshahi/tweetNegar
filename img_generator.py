@@ -7,6 +7,17 @@ from bidi.algorithm import get_display
 # install: pip install Pillow
 from PIL import Image, ImageDraw, ImageFont
 
+import json
+import urllib.request
+
+with open(r'tmp/tweet.json', encoding='utf8') as json_file:
+    data = json.load(json_file)
+    for p in data:
+        user_name = p['user']['name']
+        profile = p['user']['profile_image_url']
+        tweet_content = p['tweet']['full_text']
+
+
 # themes
 # def theme(img, font):
 
@@ -17,20 +28,23 @@ fontFile = "./assets/font/sahel/sahel.ttf"
 imageFile = "./assets/images/input/tweetNegar.jpg"
 
 # load the profile photo
-profile = Image.open("./assets/user/profile.jpg") 
+# profile = Image.open("./assets/user/profile.jpg")
+urllib.request.urlretrieve(profile, "./assets/user/profile0.jpg") # Save Profile Photo
+user_profile = Image.open("./assets/user/profile0.jpg")
+profile = user_profile.resize((180, 180))
 
 # load the font and image
 font = ImageFont.truetype(fontFile, 50)
 image = Image.open(imageFile)
 
 # firts you must prepare your text (you dont need this for english text)
-username = "نام توئیت کننده"
+username = user_name
 reshaped_text = arabic_reshaper.reshape(username)    # correct its shape
 bidi_name = get_display(reshaped_text)
 
-text = """متن متن متن متن متن 
-متن متن متن متن متن
-متن متن متن متن متن"""
+# tweet content
+text =  tweet_content[:40] + '\n' + tweet_content[40:80] + '\n' + tweet_content[80:120] + '\n' + tweet_content[120:160] + '\n' + tweet_content[160:200] + '\n' + tweet_content[200:240] + '\n' + tweet_content[240:280]
+# Content Should Wrap in a Better Way, this is just for test!!
 
 reshaped_text = arabic_reshaper.reshape(text)    # correct its shape
 bidi_text = get_display(reshaped_text)           # correct its direction
@@ -58,4 +72,4 @@ mask.save("./assets/user/mask.jpg")
 image.paste(profile, (755, 595), mask)
 
 # save it
-image.save("./assets/images/output/tweetNegar.png")
+image.save("./assets/images/output/tweetNegar0.png")
