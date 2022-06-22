@@ -12,7 +12,7 @@ isort==4.3.21
 jdatetime==3.6.2
 lazy-object-proxy==1.4.3
 mccabe==0.6.1
-numpy==1.17.3
+numpy==1.22.0
 oauthlib==3.1.0
 Pillow==8.1.1
 pycodestyle==2.6.0
